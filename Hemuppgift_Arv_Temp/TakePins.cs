@@ -18,42 +18,64 @@ namespace Hemuppgift_Arv_Temp
 
 
 
-            Console.WriteLine("Hello, Please write your username");
+            Console.WriteLine("Hello, please write your username");
             string playerName = Console.ReadLine();
-
+            // CREATING ALL NEEDED OBJ
             Board board = new Board();
             Player pcPlayer = new ComputerPlayer("Computer");
             Player player = new HumanPlayer(playerName);
 
-            Console.WriteLine("You have now created a new game.");
+            Console.WriteLine($"Hi, {player.GetUserID()}. \nYou have now created a new game of PickingPins");
+            Console.WriteLine("You can choose between 2 modes. \n[1.EASY] and [2.HARD]");
+            int gameMode = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine("How many pins would you like to play with?");
             int pinAmount = Convert.ToInt32(Console.ReadLine());
 
+            // THE GAME SETUP
             board.setUp(pinAmount);
             bool computer = true;
-            Random randomNbr = new Random();
+            bool hardMode = false;
+            int computerNbr = 0;
 
+            if (gameMode == 2)
+            {
+                hardMode = true;
+            } else
+            {
+                hardMode = false;
+            }
+
+            // THE GAME
             while (board.getNoPins() > 0)
             {
                 if (computer)
                 {
-                    Thread.Sleep(1000);
-                    int randomNumber = randomNbr.Next(1, 3);
-                    pcPlayer.TakePins(randomNumber, board);
-                    Console.Clear();
-                    if (randomNumber > 1)
+                    if (hardMode)
                     {
-                        Console.WriteLine($"{pcPlayer.userID} took {randomNumber} pins");
+                        int pinsRemain = board.getNoPins();
+                        computerNbr = ComputerHard(pinsRemain);
                     }
                     else
                     {
-                        Console.WriteLine($"{pcPlayer.userID} took {randomNumber} pin");
+                        computerNbr = ComputerEasy();
+                    }
+
+                    Thread.Sleep(1000);
+                    pcPlayer.TakePins(computerNbr, board);
+                    Console.Clear();
+                    if (computerNbr > 1)
+                    {
+                        Console.WriteLine($"{pcPlayer.GetUserID()} took {computerNbr} pins");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{pcPlayer.GetUserID()} took {computerNbr} pin");
                     }
                     computer = false ;
                 }
                 else
                 {
-                    Console.WriteLine($"Its your turn again {player.userID}, remaining pins: {board.getNoPins()}");
+                    Console.WriteLine($"Its your turn again {player.GetUserID()}, remaining pins: {board.getNoPins()}");
                     Thread.Sleep(500);
                     Console.WriteLine("How many pins would you like to pick?");
                     int temp = Convert.ToInt32(Console.ReadLine());
@@ -79,6 +101,29 @@ namespace Hemuppgift_Arv_Temp
 
             }
 
+        }
+        // FUNC FOR EASY MODE
+        static int ComputerEasy()
+        {
+            Random randomNbr = new Random();
+            return randomNbr.Next(1, 3);
+
+        }
+        // FUNC FOR HARD MODE
+        static int ComputerHard(int pinsRemain)
+        {
+            if (pinsRemain == 2)
+            {
+                return 2;
+            }
+            else if(pinsRemain % 3 == 0)
+            {
+                return 2;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
     }
